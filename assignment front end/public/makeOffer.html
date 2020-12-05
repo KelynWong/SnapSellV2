@@ -1,0 +1,126 @@
+<!-- 
+Name: Wong En Ting Kelyn
+Admission no.: P1935800
+Class: DIT/1B/01 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Make an offer</title>
+
+    <!-- Bootstrap linking -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Icons imported from fontawesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <!-- Linking to my stylesheet -->
+    <link rel="stylesheet" href="layout.css">
+</head>
+
+<body>
+    <!-- Linking to all my internal/external links -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="home.html">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="search.html">Search</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="postListing.html">Sell</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="profile.html">Profile</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+    <h1>Make an offer</h1>
+
+    <div class="container">
+        <div id="showDetails">
+            
+        </div>
+        <label for="name">Offer</label>  
+        <input class="form-control" name="userName" id="price" type="text" placeholder="Offer">
+        <br>
+        <button id="offer" type="sumbit" class="btn btn-success">Offer</button>
+    </div>
+
+    <div style="margin-top: 100px"></div>
+
+    <!-- Bootstrap 4 Scripts -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.1/axios.min.js"></script>
+    <script>
+        const baseUrl = "http://localhost:8081";
+
+        const token = localStorage.getItem('token')
+        const user_id = localStorage.getItem('userId')
+        const listingID = localStorage.getItem('listingID')
+        const isLoggedin = parseInt(localStorage.getItem("userId"));
+
+        if (token === null || isNaN(isLoggedin)) {
+            alert("You need to be logged in to access this page!")
+            window.location.href = "/login.html/";
+        } else {
+            //get listing details of the listing that user want to make offer
+            axios.get(`${baseUrl}/listings/${listingID}/`)
+            .then((response) => {
+                const listings = response.data;
+                listings.forEach((listing) => {
+                    const postHtml = `
+                    <div style="max-width: 300px; margin: 20px" class="card" style="margin-top: 2rem;">
+                        <div style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);" class="card-body">
+                            <p class="card-text">${listing.title}</p>
+                            <p class="card-text">More info: ${listing.description}</p>
+                            <p class="card-text">$${listing.price}</p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            ${listing.created_at}
+                        </div>
+                    </div>
+                    `;
+                    
+                    $("#showDetails").append(postHtml);
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+            $("#offer").click((event) => {
+                event.preventDefault();
+                const requestBody = {
+                    offer: $("#price").val(),
+                };
+                //Make an offer for other ppl's listing
+                axios.post(`${baseUrl}/users/${user_id}/listings/${listingID}/offer/`, requestBody, )
+                    .then((response)=>{
+                        window.location.assign("http://localhost:3001/search.html");
+                    })
+                    .catch((error) => {
+                        alert("You cannot make two offers to the same listing!")
+                        window.location.assign("http://localhost:3001/search.html");
+                    })
+                })
+        }
+    </script>
+</body>
+</html>

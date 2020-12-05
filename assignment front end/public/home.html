@@ -1,0 +1,289 @@
+<!-- 
+Name: Wong En Ting Kelyn
+Admission no.: P1935800
+Class: DIT/1B/01 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="layout.css">
+</head>
+
+<body>
+    <!-- Linking to all my internal/external links -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="home.html">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="search.html">Search</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="postListing.html">Sell</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="profile.html">Profile</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+    <h1>Home</h1>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h2>My Product Listings</h2>
+                <div class="row" id="listings">
+        
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h2>Offers for my listings</h2>
+                <div id="offers">
+        
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 100px"></div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.1/axios.min.js"></script>
+    <script>
+        const baseUrl = "http://localhost:8081";
+
+        const token = localStorage.getItem('token')
+        const user_id = localStorage.getItem('userId')
+        const listingID = localStorage.getItem('listing_ID')
+        const listingid = localStorage.getItem('listingid')
+        const title = localStorage.getItem('title')
+        const offerID = localStorage.getItem("offerID")
+        const isLoggedin = parseInt(localStorage.getItem("userId"));
+
+        if (token === null || isNaN(isLoggedin)) {
+            alert("You need to be logged in to access this page!")
+            window.location.href = "/login.html/";
+        } else {
+            //Get logged in user's listings
+            axios.get(`${baseUrl}/users/${user_id}/listings/`)
+                .then((response) => {
+                    $("#listings").empty()
+                    const listings = response.data;
+                    listings.forEach((listing) => {
+                        axios.get(`${baseUrl}/user/${listing.id}/listings/`)
+                        .then((response)=>{
+                            console.log(response);
+                            
+                            const likes = response.data
+                            const amountLikes = likes.length
+                            const postHtml = `
+                            <div style="width: 250px; margin: 20px" class="card" style="margin-top: 2rem;">
+                                <div style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);" class="card-body">
+                                    <img src="${listing.listing_pic_url}" id="profilepic" alt="Profile" style="max-width:100%">
+                                    <p class="card-text">${listing.title}</p>
+                                    <p class="card-text">More info: ${listing.description}</p>
+                                    <p class="card-text">$${listing.price}</p>
+                                    <p><i class="fa fa-heart"></i>${amountLikes}</p>
+                                    <button id="remove" type="submit" data-index="${listing.id}" class="btn btn-danger">Remove</button>
+                                    <button id="update" type="submit" data-index="${listing.id}" class="btn btn-primary">Update</button>
+                                </div>
+                                <div class="card-footer text-muted">
+                                    ${listing.created_at}
+                                </div>
+                            </div>
+                            `;
+                            
+                            $("#listings").append(postHtml);
+                        })
+                    });
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+            
+            $(document).on("click","#remove",function(){
+                const id = $(this).attr('data-index');
+                if (confirm("Are you sure you want to delete?")) {
+                    //Remove logged in user's listing
+                    axios.delete(`${baseUrl}/user/${id}/listings/`)
+            .then((response) => {
+                //Get logged in user's listings
+            axios.get(`${baseUrl}/users/${user_id}/listings/`)
+                .then((response) => {
+                    $("#listings").empty()
+                    const listings = response.data;
+                    listings.forEach((listing) => {
+                        axios.get(`${baseUrl}/user/${listing.id}/listings/`)
+                        .then((response)=>{
+                            console.log(response);
+                            
+                            const likes = response.data
+                            const amountLikes = likes.length
+                            const postHtml = `
+                            <div style="width: 250px; margin: 20px" class="card" style="margin-top: 2rem;">
+                                <div style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);" class="card-body">
+                                    <img src="${listing.listing_pic_url}" id="profilepic" alt="Profile" style="max-width:100%">
+                                    <p class="card-text">${listing.title}</p>
+                                    <p class="card-text">More info: ${listing.description}</p>
+                                    <p class="card-text">$${listing.price}</p>
+                                    <p><i class="fa fa-heart"></i>${amountLikes}</p>
+                                    <button id="remove" type="submit" data-index="${listing.id}" class="btn btn-danger">Remove</button>
+                                    <button id="update" type="submit" data-index="${listing.id}" class="btn btn-primary">Update</button>
+                                </div>
+                                <div class="card-footer text-muted">
+                                    ${listing.created_at}
+                                </div>
+                            </div>
+                            `;
+                            
+                            $("#listings").append(postHtml);
+                        })
+                    });
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            })
+                }
+            })
+
+            //Brings user to another page to update listing
+            $(document).on("click","#update",function(){
+                event.preventDefault();
+                localStorage.setItem("listingID",$(this).attr("data-index"))
+                window.location.assign("http://localhost:3001/updateListing.html");
+            })
+
+            //Get offers from other users for logged in user listings
+            axios.get(`${baseUrl}/user/listings/${user_id}/offers`)
+            .then((response) => {
+                const listingsIDs = response.data;
+               
+                listingsIDs.forEach(listingID=>{   
+                //Get needed details of listings for offers card
+                axios.get(`${baseUrl}/listings/${listingID.id}/offers/details`).then(response=>{
+                    const details = response.data                 
+                    details.forEach(detail=>{      
+                        const postHtml = `
+                    <div style="width: 250px; margin: 20px" class="card" style="margin-top: 2rem;">
+                        <div style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);" class="card-body">
+                            <p class="card-text">${detail.username} made an offer of $${detail.offer} for ${detail.title}</p>
+                            <button id="accept" type="submit" data-index="${detail.id}" data-index2="${listingID.id}" class="btn btn-success">Accept</button>
+                            <button id="reject" type="submit" data-index="${detail.id}" data-index2="${listingID.id}" class="btn btn-danger">Reject</button>
+                        </div>
+                    </div>
+                    `;
+
+                    $("#offers").append(postHtml);
+                    })
+                })
+                })
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        }
+        
+        //reject offer
+        $(document).on("click","#reject",function(){
+                const offerorid = $(this).attr('data-index')
+                const listingid = $(this).attr('data-index2')
+                if (confirm("Are you sure you want to reject offer?")) {
+                    //deletes offer
+                    axios.delete(`${baseUrl}/user/${listingid}/${offerorid}/offer/`)
+            .then((response) => {
+                axios.get(`${baseUrl}/user/listings/${user_id}/offers`)
+            .then((response) => {
+                const listingsIDs = response.data;
+                $("#offers").empty()
+               
+                listingsIDs.forEach(listingID=>{
+                //Get needed details of listings for offers card
+                axios.get(`${baseUrl}/listings/${listingID.id}/offers/details`).then(response=>{
+                    const details = response.data
+                  
+                    details.forEach(detail=>{        
+                        const postHtml = `
+                    <div style="width: 250px; margin: 20px" class="card" style="margin-top: 2rem;">
+                        <div style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);" class="card-body">
+                            <p class="card-text">${detail.username} made an offer of $${detail.offer} for ${detail.title}</p>
+                            <button id="accept" type="submit" data-index="${detail.id}" class="btn btn-success">Accept</button>
+                            <button id="reject" type="submit" data-index="${detail.id}" class="btn btn-danger">Reject</button>
+                        </div>
+                    </div>
+                    `;
+
+                    $("#offers").append(postHtml);
+                    })
+                })
+                })
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+            })
+                }
+            })
+
+            $(document).on('click','#accept',function(){
+                const offerorid = $(this).attr('data-index')
+                const listingid = $(this).attr('data-index2')
+                if (confirm("Are you sure you want to accept offer?")) {
+                    //deletes offer
+                    axios.delete(`${baseUrl}/user/${listingid}/${offerorid}/offer/`)
+            .then((response) => {
+                axios.get(`${baseUrl}/user/listings/${user_id}/offers`)
+            .then((response) => {
+                const listingsIDs = response.data;
+                $("#offers").empty()
+               
+                listingsIDs.forEach(listingID=>{
+                //Get needed details of listings for offers card
+                axios.get(`${baseUrl}/listings/${listingID.id}/offers/details`).then(response=>{
+                    const details = response.data
+                  
+                    details.forEach(detail=>{        
+                        const postHtml = `
+                    <div style="width: 250px; margin: 20px" class="card" style="margin-top: 2rem;">
+                        <div style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);" class="card-body">
+                            <p class="card-text">${detail.username} made an offer of $${detail.offer} for ${detail.title}</p>
+                            <button id="accept" type="submit" data-index="${detail.id}" class="btn btn-success">Accept</button>
+                            <button id="reject" type="submit" data-index="${detail.id}" class="btn btn-danger">Reject</button>
+                        </div>
+                    </div>
+                    `;
+
+                    $("#offers").append(postHtml);
+                    })
+                })
+                })
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+            })
+                }
+            })
+    </script>
+</body>
+</html>

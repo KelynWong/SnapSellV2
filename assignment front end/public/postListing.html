@@ -1,0 +1,108 @@
+<!-- 
+Name: Wong En Ting Kelyn
+Admission no.: P1935800
+Class: DIT/1B/01 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Post a listing</title>
+
+    <!-- Bootstrap linking -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Icons imported from fontawesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <!-- Linking to my stylesheet -->
+    <link rel="stylesheet" href="layout.css">
+</head>
+
+<body>
+    <!-- Linking to all my internal/external links -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="home.html">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="search.html">Search</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="postListing.html">Sell</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="profile.html">Profile</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+    <h1>Sell a product</h1>
+
+    <div class="container">
+        <label for="name">Title</label>  
+        <input class="form-control" name="userName" id="title" type="text" placeholder="Title">
+        <br>
+        <label for="email">Description</label>   
+        <input class="form-control" name="userEmail" id="description" placeholder="Description">
+        <br>
+        <label for="email">Price</label>   
+        <input class="form-control" name="userEmail" id="price" placeholder="Price">
+        <br>
+        <label for="email">Listing picture url</label>   
+        <input class="form-control" name="userEmail" id="url" placeholder="/images/example.jpg">
+        <br>
+        <button id="post" type="sumbit" class="btn btn btn-success">Post</button>
+    </div>
+
+    <div style="margin-top: 100px"></div>
+
+    <!-- Bootstrap 4 Scripts -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.1/axios.min.js"></script>
+    <script>
+        const baseUrl = "http://localhost:8081";
+
+        const token = localStorage.getItem('token')
+        const user_id = localStorage.getItem('userId')
+        const isLoggedin = parseInt(localStorage.getItem("userId"));
+
+        if (token === null || isNaN(isLoggedin)) {
+            alert("You need to be logged in to access this page!")
+            window.location.href = "/login.html/";
+        } else {
+            $("#post").click((event) => {
+                event.preventDefault();
+
+                const requestBody = {
+                    title: $("#title").val(),
+                    description: $("#description").val(),
+                    price: $("#price").val(),
+                    listing_pic_url: $("#url").val(),
+                };
+                //post listing of user that is logged in
+                axios.post(`${baseUrl}/user/${user_id}/listings`, requestBody)
+                    .then((response)=>{
+                        window.location.assign("http://localhost:3001/home.html");
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                })
+        }
+    </script>
+</body>
+</html>

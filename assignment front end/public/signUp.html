@@ -1,0 +1,85 @@
+<!-- 
+Name: Wong En Ting Kelyn
+Admission no.: P1935800
+Class: DIT/1B/01 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/public/layout.css">
+</head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                  <a class="nav-link" href="login.html">Login <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="signUp.html">Sign up</a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+ 
+        <section> 
+                <h1>Sign up</h1>
+                <form action="" method="POST"></form>
+    
+
+            <div class="container">
+                <form id="create-post-form" style="margin-top: 2rem;">
+                    <div class="form-group">
+                        <label for="name">Username*</label>  
+                        <input class="form-control" id="name" type="text" placeholder="Username" required>
+                        <br>
+                        <label for="name">Profile picture link</label>  
+                        <input class="form-control" id="pic" type="text" placeholder="/images/example.jpg">
+                        <br>
+                        <label for="email">Password*</label>   
+                        <input class="form-control" type="password" id="pwd" placeholder="Password" required>
+                        <br>
+                    <button id="signUp" type="submit" class="btn btn-primary">Sign up</button>
+                </form>
+            </div>
+        </section>
+
+            <div style="margin-top: 100px"></div>
+
+        <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.1/axios.min.js"></script>
+        <script>
+            const baseUrl = "http://localhost:8081"
+        
+            
+            $("#signUp").click((event) => {
+            event.preventDefault();
+            const requestBody = {
+                username: $("#name").val(),
+                pic: $("#pic").val(),
+                password: $("#pwd").val(),
+            };
+            //Sign up
+            axios.post(`${baseUrl}/users/`, requestBody)
+                .then((response)=>{
+                    window.location.assign("http://localhost:3001/login.html");
+                }).catch((error) => {
+                    console.log(error);
+                })
+            })
+            
+        </script>
+    </body>
+</html>
